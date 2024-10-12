@@ -1,39 +1,41 @@
 from abc import ABC, abstractmethod
-
 import requests
 
 
 class Parser(ABC):
-    '''Абстрактный класс для работы с API сервиса с вакансиями'''
 
     @abstractmethod
-    def load_vacancies(self, keyword: str) -> list[dict]:
+    def load_vacancies(self, keyword):
         pass
 
+
 class HeadHunterAPI(Parser):
-    """Класс для работы с платформой hh.ru"""
+    """Класс для работы с API HeadHunter"""
 
-    def __init__(self, file_worker):
-        self.url = 'https://api.hh.ru/vacancies'
-        self.headers = {'User-Agent': 'HH-User-Agent'}
-        self.params = {'text': '', 'page': 0, 'per_page': 100}
-        self.vacancies = []
-        super().__init__(file_worker)
+    def __init__(self):
+        """Инициализатор класса HeadHunterAPI"""
+        self.__url = 'https://api.hh.ru/vacancies'
+        self.__headers = {'User-Agent': 'HH-User-Agent'}
+        self.__params = {'text': '', 'page': 0, 'per_page': 100}
+        self.__vacancies = []
 
-    @property
-    def url(self) -> Any:
-        '''Возвращает url'''
-        return self.__url
+    def __api_connect(self):
+        """Подключение к API hh.ru"""
+        response = requests.get(self.__url, headers=self.__headers, params=self.__params)
+        if response.status_code == 200:
+            return response
 
-    def load_vacancies(self, keyword):
-        '''Получение вакансий по ключевому слову'''
-        self.params['text'] = keyword
-        while self.params.get('page') != 20:
-            response = requests.get(self.url, headers=self.headers, params=self.params)
+        print("Ошибка получения данных")
+
+    def load_vacancies(self, keyword: str) -> list:
+        """Получение вакансий по ключевому слову"""
+        self.__params['text'] = keyword
+        while self.__params.get('page') != 20:
+            response = self.__api_connect()
             if response:
                 vacancies = response.json()['items']
-                self.vacancies.extend(vacancies)
-                self.params['page'] += 1
+                self.__vacancies.extend(vacancies)
+                self.__params['page'] += 1
             else:
                 break
 
@@ -41,6 +43,7 @@ class HeadHunterAPI(Parser):
 
         if self.__vacancies:
 
+            # получение списка словарей с ключами name, url, requirement, responsibility, salary
             for vacancy in self.__vacancies:
                 name = vacancy.get("name")
                 url = vacancy.get("alternate_url")
@@ -56,19 +59,8 @@ class HeadHunterAPI(Parser):
                 else:
                     salary = 0
 
-                vac = {
-                    "name": name,
-                    "url": url,
-                    "requirement": requirement,
-                    "responsibility": responsibility,
-                    "salary": salary,
-                }
+                vac = {"name": name, "url": url, "requirement": requirement, "responsibility": responsibility,
+                       "salary": salary}
                 vacancies_list.append(vac)
 
         return vacancies_list
-
-    @url.setter
-    def url(self, value):
-        self._url = value
-
-
