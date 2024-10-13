@@ -32,13 +32,18 @@ def user_interaction():
 
     filtered_salary_list = get_vacancies_by_salary(filtered_list, salary_from, salary_to)
 
-    top_n = int(input("Введите количество вакансий для вывода в топ N: "))
-    result_list = []
 
-    if top_n > len(filtered_salary_list):
-        top_n = len(filtered_salary_list) - 1
-        result_list = get_top_vacancies(filtered_salary_list, top_n)
-    else:
+    try:
+        top_n = int(input("Введите количество вакансий для вывода в топ N: "))
+        result_list = []
+
+        if top_n > len(filtered_salary_list):
+            top_n = len(filtered_salary_list) - 1
+            result_list = get_top_vacancies(filtered_salary_list, top_n)
+        else:
+            result_list = get_top_vacancies(filtered_salary_list, top_n)
+    except ValueError:
+        top_n = 10
         result_list = get_top_vacancies(filtered_salary_list, top_n)
 
     saver = JSONSaver()
