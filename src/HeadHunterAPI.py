@@ -3,6 +3,7 @@ import requests
 
 
 class Parser(ABC):
+    '''Абстрактный класс для работы с API сервиса с вакансиями'''
 
     @abstractmethod
     def load_vacancies(self, keyword):
@@ -10,25 +11,25 @@ class Parser(ABC):
 
 
 class HeadHunterAPI(Parser):
-    """Класс для работы с API HeadHunter"""
+    '''Класс для работы с платформой hh.ru'''
 
     def __init__(self):
-        """Инициализатор класса HeadHunterAPI"""
+        '''Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра.'''
         self.__url = 'https://api.hh.ru/vacancies'
         self.__headers = {'User-Agent': 'HH-User-Agent'}
         self.__params = {'text': '', 'page': 0, 'per_page': 100}
         self.__vacancies = []
 
     def __api_connect(self):
-        """Подключение к API hh.ru"""
+        '''Метод для подключения к API hh.ru'''
         response = requests.get(self.__url, headers=self.__headers, params=self.__params)
         if response.status_code == 200:
             return response
 
-        print("Ошибка получения данных")
+        print("Что-то пошло не так")
 
     def load_vacancies(self, keyword: str) -> list:
-        """Получение вакансий по ключевому слову"""
+        '''Метод для получения вакансий по ключевому слову'''
         self.__params['text'] = keyword
         while self.__params.get('page') != 20:
             response = self.__api_connect()
@@ -43,7 +44,6 @@ class HeadHunterAPI(Parser):
 
         if self.__vacancies:
 
-            # получение списка словарей с ключами name, url, requirement, responsibility, salary
             for vacancy in self.__vacancies:
                 name = vacancy.get("name")
                 url = vacancy.get("alternate_url")

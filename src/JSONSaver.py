@@ -3,38 +3,42 @@ import os.path
 from abc import ABC, abstractmethod
 from json import JSONDecodeError
 
-from config import DATA_DIR
+from config import PATH
 from src.Vacancy import Vacancy
 
 
-class BaseSaver(ABC):
+class FileSaver(ABC):
 
     @abstractmethod
     def add_vacancy(self, vacancy):
         pass
 
     @abstractmethod
-    def get_vacancy_by_vacancy_name(self, word):
+    def get_vacancy_by_word(self, word):
         pass
 
     @abstractmethod
-    def del_vacancy(self, vacancy):
+    def delete_vacancy(self, vacancy):
         pass
 
 
-class JSONSaver(BaseSaver):
+class JSONSaver(FileSaver):
 
     def __init__(self, filename="vacancies.json"):
-        """Инициализатор класса JSONSaver"""
-        self.__file_path = os.path.join(DATA_DIR, filename)
+        '''Метод для инициализации экземпляра класса. Задаем значения атрибутам экземпляра.'''
+        self.__file_path = os.path.join(PATH, filename)
 
     def __save_to_file(self, vacancies: list[dict]) -> None:
-        """Сохраняет данные в json-файл"""
-        with open(self.__file_path, "w", encoding="utf-8") as f:
-            json.dump(vacancies, f, ensure_ascii=False)
+        '''Метод для сохранения данных в json-файл'''
+        if os.path.exists(self.__file_path):
+            with open(self.__file_path, "a", encoding="utf-8") as f:
+                json.dump(vacancies, f, ensure_ascii=False, indent=4)
+        else:
+            with open(self.__file_path, "w", encoding="utf-8") as f:
+                json.dump(vacancies, f, ensure_ascii=False, indent=4)
 
     def __read_file(self) -> list[dict]:
-        """Считывает данные из json-файла"""
+        '''Метод для чтения данных из json-файла'''
         try:
             with open(self.__file_path, encoding="utf-8") as f:
                 data = json.load(f)
@@ -46,7 +50,7 @@ class JSONSaver(BaseSaver):
         return data
 
     def add_vacancy(self, vacancy: Vacancy) -> None:
-        """Добавляет вакансию в файл"""
+        '''Метод для добавления вакансии в файл'''
         vacancies_list = self.__read_file()
 
         if vacancy.url not in [vac["url"] for vac in vacancies_list]:
@@ -54,24 +58,25 @@ class JSONSaver(BaseSaver):
             self.__save_to_file(vacancies_list)
 
     def add_vacancies(self, vacancies: list[dict]) -> None:
-        """Добавляет вакансии в файл"""
+        '''Метод для добавления списка вакансий в файл'''
         self.__save_to_file(vacancies)
 
-    def del_vacancy(self, url: str) -> None:
-        """Удаляет вакансию из файла"""
+
+    def delete_vacancy(self, url: str) -> None:
+        '''Метод для удаления вакансии из файла'''
         vacancies_list = self.__read_file()
-        for index, vac in enumerate(vacancies_list):
-            if vac["url"] == url:
+        for index, vacancy in enumerate(vacancies_list):
+            if vacancy["url"] == url:
                 vacancies_list.pop(index)
 
         self.__save_to_file(vacancies_list)
 
-    def get_vacancy_by_vacancy_name(self, word: str) -> list[Vacancy]:
+    def get_vacancy_by_word(self, word: str) -> list[Vacancy]:
         """Возвращает список вакансий по ключевому слову в названии вакансии"""
         found_vacancies = []
 
-        for vac in self.__read_file():
-            if word in vac.get("name").lower():
-                found_vacancies.append(vac)
+        for vacancy in self.__read_file():
+            if word in vacancy.get("name").lower():
+                found_vacancies.append(vacancy)
 
-        return Vacancy.cast_to_object_list(found_vacancies)
+        return Vacancy.vacancies_list_to_vacancy(found_vacancies)

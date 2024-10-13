@@ -1,20 +1,27 @@
 from src.Vacancy import Vacancy
 
 
-def get_vacancies_by_salary_from(vacancies: list[Vacancy], salary_from: int) -> list[Vacancy]:
-    """Возвращает список вакансий в заданном диапазоне зарплат"""
+def get_vacancies_by_salary(vacancies: list[Vacancy], salary_from: int, salary_to: int) -> list[Vacancy]:
+    '''Функция для вывода вакансий по заданному диапазону зарплат'''
 
-    return [vac for vac in vacancies if vac.salary >= salary_from]
+    vacancy_from = [vacancy for vacancy in vacancies if vacancy["salary"] >= salary_from]
+    return [vacancy for vacancy in vacancy_from if vacancy["salary"] <= salary_to]
+
+
+def filter_vacancies(vacancies: list[Vacancy], filter_word: str) -> list[Vacancy]:
+    '''Функция для фильтрации вакансий по заданному слову'''
+
+    return [vacancy for vacancy in vacancies if filter_word in vacancy["name"]]
 
 
 def sort_vacancies_by_salary(vacancies: list[Vacancy]) -> list[Vacancy]:
-    """Сортирует вакансии по зарплате"""
+    '''Функция для сортировки вакансий по размеру зарплаты'''
 
-    return sorted(vacancies, key=lambda vacancy: vacancy.salary, reverse=True)
+    return sorted(vacancies, key=lambda vacancy: vacancy["salary"], reverse=True)
 
 
 def get_top_vacancies(vacancies: list[Vacancy], top_n: int) -> list[Vacancy]:
-    """Возвращает топ N вакансий по зарплате"""
+    '''Функция для вывода заданного кол-ва вакансий с наиболее высокой зарплатой'''
     sorted_vacancies = sort_vacancies_by_salary(vacancies)
 
     return sorted_vacancies[:top_n]
