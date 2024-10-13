@@ -32,7 +32,6 @@ def user_interaction():
 
     filtered_salary_list = get_vacancies_by_salary(filtered_list, salary_from, salary_to)
 
-
     try:
         top_n = int(input("Введите количество вакансий для вывода в топ N: "))
         result_list = []
@@ -48,9 +47,9 @@ def user_interaction():
 
     saver = JSONSaver()
 
-
     for vacancy in result_list:
-        vacancy_for_file = Vacancy(vacancy["name"], vacancy["url"], vacancy["requirement"], vacancy["responsibility"], vacancy["salary"])
+        vacancy_for_file = Vacancy(vacancy["name"], vacancy["url"], vacancy["requirement"], vacancy["responsibility"],
+                                   vacancy["salary"])
         saver.add_vacancy(vacancy_for_file)
         print(f'\nНаименование вакансии: {vacancy["name"]}\n'
               f'Ссылка на вакансию: {vacancy["url"]}\n'

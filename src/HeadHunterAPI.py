@@ -31,10 +31,10 @@ class HeadHunterAPI(Parser):
     def load_vacancies(self, keyword: str) -> list:
         '''Метод для получения вакансий по ключевому слову'''
         self.__params['text'] = keyword
-        while self.__params.get('page') != 20:
+        while self.__params.get('page') < 20:
             response = self.__api_connect()
             if response:
-                vacancies = response.json()['items']
+                vacancies = response.json().get('items', [])
                 self.__vacancies.extend(vacancies)
                 self.__params['page'] += 1
             else:
@@ -47,20 +47,20 @@ class HeadHunterAPI(Parser):
             for vacancy in self.__vacancies:
                 name = vacancy.get("name")
                 url = vacancy.get("alternate_url")
-                requirement = vacancy.get("snippet").get("requirement")
-                responsibility = vacancy.get("snippet").get("responsibility")
-                salary = ''
+                requirement = vacancy.get("snippet", {}).get("requirement")
+                responsibility = vacancy.get("snippet", {}).get("responsibility")
+                salary = 0
 
                 if vacancy.get("salary"):
-                    if vacancy.get("salary").get("to"):
-                        salary = vacancy.get("salary").get("to")
-                    elif vacancy.get("salary").get("from"):
-                        salary = vacancy.get("salary").get("from")
-                else:
-                    salary = 0
+                    salary = vacancy["salary"].get("to") or vacancy["salary"].get("from") or 0
 
-                vac = {"name": name, "url": url, "requirement": requirement, "responsibility": responsibility,
-                       "salary": salary}
+                vac = {
+                    "name": name,
+                    "url": url,
+                    "requirement": requirement,
+                    "responsibility": responsibility,
+                    "salary": salary
+                }
                 vacancies_list.append(vac)
 
         return vacancies_list
