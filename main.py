@@ -13,8 +13,6 @@ def user_interaction():
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.load_vacancies(search_query)
 
-
-
     filter_word = input("Введите ключевое слово для фильтрации вакансий: ")
     if filter_word:
         filtered_list = filter_vacancies(hh_vacancies, filter_word)
@@ -60,8 +58,8 @@ def user_interaction():
               f'Требования: {vacancy.requirement}\n'
               f'Обязанности: {vacancy.responsibility}\n'
               f'Зарплата: {vacancy.salary}\n')
-#
-#
+
+
 if __name__ == "__main__":
     user_interaction()
 

@@ -7,6 +7,7 @@ def test_load_vacancies_returns_list():
     result = hh_api.load_vacancies(keyword)
     assert isinstance(result, list)
 
+
 def test_load_vacancies_with_no_vacancies():
     keyword = "This keyword does not exist"
     hh_api = HeadHunterAPI()
