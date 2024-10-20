@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import requests
 
+from src.Vacancy import Vacancy
+
 
 class Parser(ABC):
     '''Абстрактный класс для работы с API сервиса с вакансиями'''
@@ -26,7 +28,6 @@ class HeadHunterAPI(Parser):
         if response.status_code == 200:
             return response
 
-        print("Что-то пошло не так")
 
     def load_vacancies(self, keyword: str) -> list:
         '''Метод для получения вакансий по ключевому слову'''
@@ -54,13 +55,15 @@ class HeadHunterAPI(Parser):
                 if vacancy.get("salary"):
                     salary = vacancy["salary"].get("to") or vacancy["salary"].get("from") or 0
 
-                vac = {
-                    "name": name,
-                    "url": url,
-                    "requirement": requirement,
-                    "responsibility": responsibility,
-                    "salary": salary
-                }
+                vac = Vacancy(name, url, requirement, responsibility, salary)
+
+                # vac = {
+                #     "name": name,
+                #     "url": url,
+                #     "requirement": requirement,
+                #     "responsibility": responsibility,
+                #     "salary": salary
+                # }
                 vacancies_list.append(vac)
 
         return vacancies_list

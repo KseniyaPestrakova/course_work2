@@ -8,8 +8,12 @@ def user_interaction():
     """Функция для взаимодействия с пользователем"""
     search_query = input("Введите поисковый запрос: ")
 
+    print('Пожалуйста, подождите...')
+
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.load_vacancies(search_query)
+
+
 
     filter_word = input("Введите ключевое слово для фильтрации вакансий: ")
     if filter_word:
@@ -48,15 +52,16 @@ def user_interaction():
     saver = JSONSaver()
 
     for vacancy in result_list:
-        vacancy_for_file = Vacancy(vacancy["name"], vacancy["url"], vacancy["requirement"], vacancy["responsibility"],
-                                   vacancy["salary"])
+        vacancy_for_file = Vacancy(vacancy.name, vacancy.url, vacancy.requirement, vacancy.responsibility,
+                                   vacancy.salary)
         saver.add_vacancy(vacancy_for_file)
-        print(f'\nНаименование вакансии: {vacancy["name"]}\n'
-              f'Ссылка на вакансию: {vacancy["url"]}\n'
-              f'Требования: {vacancy["requirement"]}\n'
-              f'Обязанности: {vacancy["responsibility"]}\n'
-              f'Зарплата: {vacancy["salary"]}\n')
-
-
+        print(f'\nНаименование вакансии: {vacancy.name}\n'
+              f'Ссылка на вакансию: {vacancy.url}\n'
+              f'Требования: {vacancy.requirement}\n'
+              f'Обязанности: {vacancy.responsibility}\n'
+              f'Зарплата: {vacancy.salary}\n')
+#
+#
 if __name__ == "__main__":
     user_interaction()
+

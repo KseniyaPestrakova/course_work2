@@ -12,8 +12,8 @@ class Vacancy:
 
     @staticmethod
     def __salary_validation(salary: int):
-        '''Метод для проверки зарплаты'''
-        if salary:
+        '''Валидация зарплаты'''
+        if isinstance(salary, (int, float)) and salary >= 0:
             return salary
         return 0
 
