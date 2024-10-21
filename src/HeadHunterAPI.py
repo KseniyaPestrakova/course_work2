@@ -29,7 +29,7 @@ class HeadHunterAPI(Parser):
         response = requests.get(self.__url, headers=self.__headers, params=self.__params)
         if response.status_code == 200:
             return response
-        return response
+        return None
 
     def load_vacancies(self, keyword: str) -> List[Vacancy]:
         """Метод для получения вакансий по ключевому слову"""

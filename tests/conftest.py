@@ -2,6 +2,7 @@ import pytest
 
 from src.Vacancy import Vacancy
 
+
 @pytest.fixture
 def vacancies():
     vacancies = [
